@@ -1,0 +1,17 @@
+# Ignora tudo por padrão (imagens da base, modelos treinados, caches...)
+*
+
+# ...mas versiona as pastas, o código-fonte, a documentação e os gráficos
+!*/
+!*.py
+!.gitignore
+!README.md
+!requirements.txt
+!resultados/graficos/*.png
+
+# Nunca versionar ambientes virtuais / caches / configs locais
+.venv/
+venv/
+env/
+__pycache__/
+.vscode/
