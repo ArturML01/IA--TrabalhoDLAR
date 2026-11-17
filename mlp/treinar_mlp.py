@@ -1,14 +1,8 @@
-"""
-=====================================================================
- TREINAMENTO E AVALIAÇÃO DA MLP (sklearn.neural_network.MLPClassifier)
-=====================================================================
-Uso (a partir da pasta do projeto):
-    python mlp/treinar_mlp.py
+"""Treina e avalia a MLP.
 
-Validação: Hold-out estratificado 70% treino / 30% teste (mesmo split da CNN).
-Os hiperparâmetros (neurônios por camada e regularização) são escolhidos
-com validação cruzada de 5 folds usando SOMENTE os 70% de treino.
-O conjunto de TESTE só é usado no final, para as métricas.
+Hold-out 70/30 (o mesmo da CNN); hiperparâmetros escolhidos por 5-fold CV no treino.
+
+Uso: python mlp/treinar_mlp.py
 """
 import os
 import sys
@@ -35,7 +29,7 @@ def carregar_atributos(caminhos):
 
 def criar_pipeline():
     return Pipeline([
-        ("padronizacao", StandardScaler()),   # média 0 / desvio 1 em cada atributo
+        ("padronizacao", StandardScaler()),   # média 0, desvio 1
         ("mlp", MLPClassifier(
             activation="relu",
             solver="adam",
@@ -52,7 +46,7 @@ GRADE_HIPERPARAMETROS = {
 
 
 if __name__ == "__main__":
-    # 1. Mesma divisão hold-out usada pela CNN
+    # 1. Mesma divisão da CNN
     cam_treino, y_treino, cam_teste, y_teste, classes = dividir_holdout()
     print(f"Classes ({len(classes)}): {classes}")
     print(f"Treino: {len(cam_treino)} imagens | Teste: {len(cam_teste)} imagens")
@@ -64,7 +58,7 @@ if __name__ == "__main__":
     print(f"Vetor de atributos: {X_treino.shape[1]} valores por imagem "
           f"({time.perf_counter() - inicio:.1f} s)")
 
-    # 2. Escolha de hiperparâmetros com validação cruzada (só no treino)
+    # 2. Hiperparâmetros por validação cruzada no treino
     print("\nBuscando a melhor arquitetura da MLP (5-fold CV no treino)...")
     busca = GridSearchCV(
         criar_pipeline(),
@@ -79,7 +73,7 @@ if __name__ == "__main__":
     print(f"Melhores hiperparâmetros: {busca.best_params_} "
           f"(F1 médio na CV: {busca.best_score_:.4f}) - busca levou {tempo_busca:.1f} s")
 
-    # 3. Treino final com a melhor configuração (cronometrado)
+    # 3. Treino final com a melhor configuração
     modelo = criar_pipeline().set_params(**busca.best_params_)
     inicio = time.perf_counter()
     modelo.fit(X_treino, y_treino)
@@ -96,7 +90,7 @@ if __name__ == "__main__":
     joblib.dump(modelo, config.CAMINHO_MODELO_MLP)
     print(f"Modelo salvo em: {config.CAMINHO_MODELO_MLP}")
 
-    # 4. Avaliação final no conjunto de TESTE
+    # 4. Avaliação no teste
     y_pred = modelo.predict(X_teste)
 
     avaliar(

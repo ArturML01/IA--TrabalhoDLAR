@@ -1,10 +1,4 @@
-"""
-=====================================================================
- MODELO 1 - CNN (Rede Neural Convolucional) - Keras / TensorFlow
-=====================================================================
-A CNN recebe os PIXELS da imagem (224x224x3) e aprende sozinha, através
-dos filtros convolucionais, quais padrões identificam cada cor.
-"""
+"""Modelo 1: CNN (Keras). Recebe os pixels da imagem (224x224x3)."""
 import os
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
@@ -33,8 +27,7 @@ def criar_modelo_cnn(num_classes):
         Flatten(),
 
         Dense(128, activation="relu"),
-        # Softmax: cada imagem da base pertence a UMA única cor (pasta),
-        # então as probabilidades das 15 classes somam 1.
+        # Softmax: cada imagem tem uma única cor
         Dense(num_classes, activation="softmax"),
     ])
 
@@ -52,7 +45,7 @@ def preparar_imagem(img_pil):
 
 
 class ClassificadorCNN:
-    """Interface usada pela aplicação (prever / organizar wallpapers)."""
+    """Interface usada pela aplicação."""
     nome = "CNN"
 
     def __init__(self, caminho=config.CAMINHO_MODELO_CNN):

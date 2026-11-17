@@ -1,9 +1,4 @@
-"""
-Configurações compartilhadas entre a CNN e a MLP.
-
-Os dois modelos usam EXATAMENTE a mesma divisão hold-out (mesma semente e as
-mesmas imagens de teste) para que a comparação seja justa.
-"""
+"""Configurações compartilhadas pela CNN e pela MLP."""
 import os
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,7 +10,7 @@ EXTENSOES_VALIDAS = (".png", ".jpg", ".jpeg", ".webp", ".avif", ".bmp")
 
 # Hold-out
 PROPORCAO_TESTE = 0.30       # 70% treino / 30% teste
-PROPORCAO_VALIDACAO = 0.15   # parte do TREINO usada só para o early stopping da CNN
+PROPORCAO_VALIDACAO = 0.15   # fração do treino para o early stopping da CNN
 SEMENTE = 42
 
 # Saídas

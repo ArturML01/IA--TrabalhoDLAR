@@ -1,12 +1,6 @@
-"""
-=====================================================================
- COMPARATIVO CNN x MLP
-=====================================================================
-Lê resultados/metricas/cnn.json e mlp.json (gerados pelos scripts de
-treino) e gera os gráficos da apresentação em resultados/graficos/.
+"""Compara CNN e MLP a partir de resultados/metricas/ e salva os gráficos em resultados/graficos/.
 
-Uso:
-    python comparacao/comparar_modelos.py
+Uso: python comparacao/comparar_modelos.py
 """
 import os
 import sys
@@ -25,14 +19,14 @@ from matplotlib.patches import Rectangle
 from comum import config
 from comum.dados import nome_curto, abrir_imagem
 
-# ---------------- Identidade visual ----------------
-COR = {"CNN": "#2a78d6", "MLP": "#eb6834"}   # azul / laranja (par seguro p/ daltonismo)
+# Estilo dos gráficos
+COR = {"CNN": "#2a78d6", "MLP": "#eb6834"}   # par seguro para daltonismo
 TEXTO, TEXTO_2, MUDO, GRADE, FUNDO = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#fcfcfb"
 ACERTO, ERRO = "#006300", "#d03b3b"
 AZUL_SEQ = LinearSegmentedColormap.from_list(
     "azul", ["#fcfcfb", "#cde2fb", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"])
 
-# Cor "real" de cada classe para as amostras ao lado dos rótulos
+# Amostra de cor ao lado de cada rótulo
 AMOSTRA = {
     "branco": "#f7f7f5", "cinza": "#8c8c8c", "preto": "#151515",
     "primaria_amarelo": "#f5d000", "primaria_azul": "#1f5fd6", "primaria_vermelho": "#d62020",
@@ -90,13 +84,11 @@ def legenda_modelos(ax, loc="upper left", **kw):
 
 
 def vencedor(valores):
-    """('MLP', 'CNN') se MLP > CNN, etc."""
+    """Retorna (vencedor, perdedor)."""
     return ("MLP", "CNN") if valores["MLP"] >= valores["CNN"] else ("CNN", "MLP")
 
 
-# ------------------------------------------------------------------
 # 1. Placar das 4 métricas
-# ------------------------------------------------------------------
 def grafico_placar(d):
     nomes = [("acuracia", "Acurácia"), ("precisao", "Precisão"), ("recall", "Recall"), ("f1", "F1-score")]
     fig, ax = plt.subplots(figsize=(16, 9))
@@ -134,11 +126,9 @@ def grafico_placar(d):
     salvar(fig, "01_placar_metricas.png")
 
 
-# ------------------------------------------------------------------
 # 2. Matrizes de confusão lado a lado
-# ------------------------------------------------------------------
 def rotulos_com_amostra(ax, classes, eixo):
-    """Escreve o nome curto + quadradinho com a cor real ao lado do rótulo."""
+    """Rótulo com a amostra da cor ao lado."""
     nomes = [nome_curto(c) for c in classes]
     n = len(classes)
     if eixo == "y":
@@ -170,7 +160,7 @@ def grafico_matrizes(d):
                 if m[i, j]:
                     ax.text(j, i, m[i, j], ha="center", va="center", fontsize=12,
                             color="white" if pct[i, j] > 0.5 else TEXTO, weight="bold" if i == j else None)
-        # contorno destacando a diagonal (acertos)
+        # destaca a diagonal (acertos)
         for i in range(n):
             ax.add_patch(Rectangle((i - 0.5, i - 0.5), 1, 1, fill=False, ec=TEXTO, lw=0.6, alpha=0.35))
         ax.set_xlim(-0.5, n - 0.5)
@@ -190,9 +180,7 @@ def grafico_matrizes(d):
     salvar(fig, "02_matrizes_confusao.png")
 
 
-# ------------------------------------------------------------------
 # 3. F1 por cor (dumbbell)
-# ------------------------------------------------------------------
 def grafico_por_classe(d):
     classes = d["CNN"]["classes"]
     f1 = {m: np.array([d[m]["por_classe"][c]["f1-score"] for c in classes]) for m in d}
@@ -204,7 +192,7 @@ def grafico_por_classe(d):
         a, b = f1["CNN"][i], f1["MLP"][i]
         empate = np.isclose(a, b)
         ax.plot([a, b], [y, y], color=GRADE, lw=4, zorder=1, solid_capstyle="round")
-        # em caso de empate, afasta os pontos na vertical para os dois aparecerem
+        # no empate, afasta os pontos para os dois aparecerem
         ax.scatter([a], [y - 0.17 * empate], s=190, color=COR["CNN"], zorder=3, ec=FUNDO, lw=2)
         ax.scatter([b], [y + 0.17 * empate], s=190, color=COR["MLP"], zorder=3, ec=FUNDO, lw=2)
         if empate:
@@ -232,9 +220,7 @@ def grafico_por_classe(d):
     salvar(fig, "03_f1_por_cor.png")
 
 
-# ------------------------------------------------------------------
 # 4. Custo computacional (small multiples)
-# ------------------------------------------------------------------
 def formatar(v, unidade):
     if unidade == "params":
         txt = f"{v / 1e6:.1f} milhões" if v >= 1e6 else f"{v / 1e3:.0f} mil"
@@ -248,11 +234,7 @@ def formatar(v, unidade):
 
 
 def medir_inferencia(d, repeticoes=3):
-    """
-    Mede o tempo médio para classificar 1 imagem, do mesmo jeito para os dois:
-    imagens de teste já abertas em memória -> pré-processamento do modelo
-    (redimensionar p/ CNN, extrair atributos p/ MLP) -> previsão. Usa o melhor de 3.
-    """
+    """Tempo médio por imagem (ms), com pré-processamento; melhor de `repeticoes` rodadas."""
     sys.path.insert(0, os.path.join(config.RAIZ, "aplicacao"))
     from aplicacao.analise_regioes import carregar_classificador
 
@@ -307,9 +289,7 @@ def grafico_custo(d):
     salvar(fig, "04_custo_computacional.png")
 
 
-# ------------------------------------------------------------------
 # 5. Exemplos reais do teste
-# ------------------------------------------------------------------
 def grafico_exemplos(d):
     classes = d["CNN"]["classes"]
     y = np.array(d["CNN"]["y_true"])
@@ -344,7 +324,7 @@ def grafico_exemplos(d):
         ax.set_xticks([]); ax.set_yticks([])
         for s in ax.spines.values():
             s.set_visible(False)
-        # legenda abaixo da imagem: cor real + resposta de cada modelo
+        # cor real + resposta de cada modelo
         ax.text(0.0, -0.05, f"Real: {nome_curto(classes[y[i]])}", transform=ax.transAxes,
                 ha="left", va="top", fontsize=16, weight="bold")
         for k, (m, p) in enumerate((("CNN", pc[i]), ("MLP", pm[i]))):
@@ -360,9 +340,7 @@ def grafico_exemplos(d):
     salvar(fig, "05_exemplos_teste.png")
 
 
-# ------------------------------------------------------------------
 # 6. (Apêndice) Curvas de aprendizado
-# ------------------------------------------------------------------
 def grafico_curvas(d):
     fig, axes = plt.subplots(1, 2, figsize=(16, 7.5))
     fig.subplots_adjust(left=0.07, right=0.97, top=0.74, bottom=0.13, wspace=0.25)

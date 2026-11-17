@@ -1,12 +1,4 @@
-"""
-=====================================================================
- MODELO 2 - MLP (Perceptron de Múltiplas Camadas) - scikit-learn
-=====================================================================
-A MLP não enxerga a imagem diretamente. Primeiro cada imagem é resumida
-em um vetor de 128 ATRIBUTOS DE COR (histogramas de matiz, saturação,
-brilho, médias RGB...). A MLP (sklearn.neural_network.MLPClassifier)
-aprende a classificar a cor a partir desse vetor.
-"""
+"""Modelo 2: MLP (scikit-learn). Recebe 128 atributos de cor extraídos da imagem."""
 import os
 
 import numpy as np
@@ -15,20 +7,15 @@ from PIL import Image
 
 from comum import config
 
-TAMANHO_ANALISE = (128, 128)   # reduz a imagem só para acelerar os histogramas
-BINS_MATIZ = 36                # 1 bin a cada 10 graus do círculo cromático
+TAMANHO_ANALISE = (128, 128)   # reduzida para acelerar os histogramas
+BINS_MATIZ = 36                # 1 bin a cada 10 graus
 
 
 def extrair_atributos(img_pil):
-    """
-    Converte uma imagem em um vetor de 128 atributos de cor:
-      - 36  histograma de MATIZ (só pixels coloridos)     -> "qual cor"
-      -  8  histograma de SATURAÇÃO                       -> "quão viva"
-      -  8  histograma de BRILHO (V)                      -> "quão clara/escura"
-      -  4  fração de pixels preto / branco / cinza / colorido
-      -  6  média e desvio padrão de R, G, B
-      -  2  matiz média (cos, sin) dos pixels coloridos
-      - 64  histograma RGB conjunto 4x4x4
+    """Vetor de 128 atributos de cor:
+    36 histograma de matiz (pixels coloridos), 8 de saturação, 8 de brilho,
+    4 frações preto/branco/cinza/colorido, 6 média e desvio de RGB,
+    2 matiz média (cos, sin), 64 histograma RGB 4x4x4.
     """
     img = img_pil.convert("RGB").resize(TAMANHO_ANALISE, Image.BILINEAR)
     rgb = np.asarray(img, dtype=np.float32) / 255.0
@@ -62,7 +49,7 @@ def extrair_atributos(img_pil):
 
 
 class ClassificadorMLP:
-    """Interface usada pela aplicação (prever / organizar wallpapers)."""
+    """Interface usada pela aplicação."""
     nome = "MLP"
 
     def __init__(self, caminho=config.CAMINHO_MODELO_MLP):

@@ -1,9 +1,4 @@
-"""
-Lógica da aplicação, comum aos dois modelos: analisa a imagem inteira e uma
-grade 3x3 de regiões para descobrir as cores presentes num wallpaper.
-
-O modelo (CNN ou MLP) só precisa oferecer o método prever_proba(lista_de_imagens_PIL).
-"""
+"""Analisa a imagem inteira e uma grade 3x3. Funciona com qualquer modelo que tenha prever_proba()."""
 import os
 import sys
 
@@ -25,7 +20,7 @@ def carregar_classificador(nome):
 
 
 def recortar_grade(img, linhas=3, colunas=3):
-    """Divide a imagem em uma grade linhas x colunas e devolve [(linha, coluna, recorte)]."""
+    """Retorna [(linha, coluna, recorte)]."""
     largura, altura = img.size
     passo_x, passo_y = largura / colunas, altura / linhas
     recortes = []
@@ -47,8 +42,7 @@ def analisar(img, classificador):
 
 
 def cor_principal(img, classificador, classes, limiar):
-    """Cor com maior confiança entre as regiões; se nenhuma passa o limiar,
-    usa a mais provável da imagem inteira."""
+    """Cor mais confiante entre as regiões; se nenhuma passa o limiar, a mais provável da imagem inteira."""
     probs_global, regioes = analisar(img, classificador)
     melhores = {}
     for _, _, p in regioes:

@@ -1,10 +1,4 @@
-"""
-Carregamento da base de imagens e divisão Hold-out compartilhada.
-
-A base fica em imagens_DL/dataset_geral/<classe>/<imagem>. Cada imagem pertence
-a UMA classe (a pasta onde está), então o problema é de classificação
-multiclasse com rótulo único.
-"""
+"""Leitura da base (imagens_DL/dataset_geral/<cor>/) e divisão hold-out."""
 import os
 import json
 
@@ -16,8 +10,7 @@ from comum import config
 
 
 def caminho_longo(caminho):
-    """Prefixo \\\\?\\ no Windows para ler arquivos com caminho > 260 caracteres
-    (sem precisar renomear nem apagar nada da base)."""
+    """Prefixo \\\\?\\ para caminhos com mais de 260 caracteres no Windows."""
     abs_path = os.path.abspath(caminho)
     if os.name == "nt" and not abs_path.startswith("\\\\?\\"):
         return "\\\\?\\" + abs_path
@@ -51,10 +44,7 @@ def listar_base():
 
 
 def dividir_holdout():
-    """
-    Hold-out estratificado 70/30 (mesma proporção de cada cor nos dois lados).
-    A divisão é salva em disco para que CNN e MLP avaliem nas MESMAS imagens.
-    """
+    """Hold-out estratificado 70/30, salvo em disco para CNN e MLP usarem as mesmas imagens."""
     caminhos, rotulos, classes = listar_base()
     arquivo_split = os.path.join(config.CACHE_DIR, "divisao_holdout.json")
 
@@ -78,7 +68,7 @@ def dividir_holdout():
 
 
 def nome_curto(classe):
-    """'terciaria_azul_verde' -> 'azul-verde' (rótulos legíveis nos gráficos)."""
+    """'terciaria_azul_verde' -> 'azul-verde'."""
     partes = classe.split("_")
     if partes[0] in ("primaria", "secundaria", "terciaria"):
         partes = partes[1:]

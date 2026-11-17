@@ -1,13 +1,8 @@
-"""
-=====================================================================
- TREINAMENTO E AVALIAÇÃO DA CNN
-=====================================================================
-Uso (a partir da pasta do projeto):
-    python cnn/treinar_cnn.py
+"""Treina e avalia a CNN.
 
-Validação: Hold-out estratificado 70% treino / 30% teste (mesmo split da MLP).
-Dentro dos 70% de treino, 15% são separados como validação apenas para o
-Early Stopping — o conjunto de TESTE só é usado no final, para as métricas.
+Hold-out 70/30 (o mesmo da MLP); 15% do treino é validação para o early stopping.
+
+Uso: python cnn/treinar_cnn.py
 """
 import os
 import sys
@@ -38,7 +33,7 @@ def carregar_pixels(caminhos):
 if __name__ == "__main__":
     keras.utils.set_random_seed(config.SEMENTE)
 
-    # 1. Mesma divisão hold-out usada pela MLP
+    # 1. Mesma divisão da MLP
     cam_treino, y_treino, cam_teste, y_teste, classes = dividir_holdout()
     num_classes = len(classes)
     print(f"Classes ({num_classes}): {classes}")
@@ -48,7 +43,7 @@ if __name__ == "__main__":
     X_treino_total = carregar_pixels(cam_treino)
     X_teste = carregar_pixels(cam_teste)
 
-    # 2. Validação interna (só para o early stopping), tirada do treino
+    # 2. Validação para o early stopping
     X_tr, X_val, y_tr, y_val = train_test_split(
         X_treino_total, y_treino,
         test_size=config.PROPORCAO_VALIDACAO,
@@ -56,7 +51,7 @@ if __name__ == "__main__":
         random_state=config.SEMENTE,
     )
 
-    # 3. Data augmentation (só geometria: não altera as cores)
+    # 3. Data augmentation só geométrico, para não alterar as cores
     augment = ImageDataGenerator(
         rotation_range=20,
         width_shift_range=0.2,
@@ -92,7 +87,7 @@ if __name__ == "__main__":
     modelo.save(config.CAMINHO_MODELO_CNN)
     print(f"Modelo salvo em: {config.CAMINHO_MODELO_CNN}")
 
-    # 4. Avaliação final no conjunto de TESTE (nunca visto no treino)
+    # 4. Avaliação no teste
     probs = modelo.predict(X_teste, verbose=0)
     y_pred = np.argmax(probs, axis=1)
 

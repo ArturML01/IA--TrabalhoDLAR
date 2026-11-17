@@ -1,10 +1,6 @@
-"""
-Copia cada wallpaper de imagens_teste_cor/ para uma pasta com o nome da sua
-cor principal: resultados/wallpapers_organizados/<modelo>/<cor>/
+"""Copia cada wallpaper de imagens_teste_cor/ para resultados/wallpapers_organizados/<modelo>/<cor>/.
 
-Uso:
-    python aplicacao/organizar_wallpapers.py --modelo cnn
-    python aplicacao/organizar_wallpapers.py --modelo mlp
+Uso: python aplicacao/organizar_wallpapers.py --modelo {cnn,mlp}
 """
 import os
 import shutil

@@ -1,10 +1,4 @@
-"""
-Métricas de avaliação exigidas pela atividade (classificação):
-acurácia, precisão, recall, F1-score e matriz de confusão.
-
-Precisão, recall e F1 são reportados com média 'macro' (todas as 15 cores com
-o mesmo peso) e também por classe.
-"""
+"""Acurácia, precisão, recall, F1 (média macro e por classe) e matriz de confusão."""
 import os
 import json
 
@@ -37,7 +31,7 @@ def avaliar(nome_modelo, y_true, y_pred, classes, caminhos_teste, extras=None):
         zero_division=0, output_dict=True,
     )
 
-    # ---- Saída no terminal ----
+    # Terminal
     print("\n" + "=" * 60)
     print(f"MÉTRICAS NO CONJUNTO DE TESTE (hold-out 30%) - {nome_modelo}")
     print("=" * 60)
@@ -51,7 +45,7 @@ def avaliar(nome_modelo, y_true, y_pred, classes, caminhos_teste, extras=None):
     print("Matriz de confusão (linhas = real, colunas = previsto):")
     print(matriz)
 
-    # ---- Persistência para o comparativo ----
+    # Arquivo usado pelo comparativo
     saida = {
         "modelo": nome_modelo,
         "classes": classes,

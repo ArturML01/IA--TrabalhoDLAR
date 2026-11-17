@@ -1,11 +1,6 @@
-"""
-Executa o trabalho completo, na ordem:
-  1. Treina e avalia a CNN
-  2. Treina e avalia a MLP
-  3. Gera o comparativo (tabela no terminal + gráficos em resultados/graficos/)
+"""Treina e avalia a CNN e a MLP e gera o comparativo.
 
-Uso:
-    python executar_tudo.py
+Uso: python executar_tudo.py
 """
 import os
 import sys

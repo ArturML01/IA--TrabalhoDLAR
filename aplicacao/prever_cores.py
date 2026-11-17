@@ -1,10 +1,6 @@
-"""
-Mostra as cores detectadas em cada wallpaper de imagens_teste_cor/
-(imagem inteira + grade 3x3).
+"""Mostra as cores de cada wallpaper de imagens_teste_cor/ (imagem inteira + grade 3x3).
 
-Uso:
-    python aplicacao/prever_cores.py --modelo cnn
-    python aplicacao/prever_cores.py --modelo mlp
+Uso: python aplicacao/prever_cores.py --modelo {cnn,mlp}
 """
 import os
 import argparse
